@@ -9,8 +9,10 @@ import SignUp from "./pages/auth/SignUp";
 import MainLayout from "./components/layout/MainLayout";
 import Feed from "./pages/feed/Feed";
 import Communities from "./pages/communities/Communities";
+import CommunityDetail from "./pages/communities/CommunityDetail";
 import Messages from "./pages/messages/Messages";
 import Projects from "./pages/projects/Projects";
+import ProjectDetail from "./pages/projects/ProjectDetail";
 
 const queryClient = new QueryClient();
 
@@ -27,8 +29,10 @@ const App = () => (
           <Route element={<MainLayout />}>
             <Route path="/feed" element={<Feed />} />
             <Route path="/communities" element={<Communities />} />
+            <Route path="/communities/:id" element={<CommunityDetail />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
