@@ -1,14 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Share2, User, Calendar, Link as LinkIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import CommentSection from "@/components/comment/CommentSection";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjectById } from "@/api/projects";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import ProjectHeader from "@/components/project/ProjectHeader";
+import ProjectMetadata from "@/components/project/ProjectMetadata";
+import ProjectTools from "@/components/project/ProjectTools";
+import ProjectActions from "@/components/project/ProjectActions";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,6 +62,19 @@ const ProjectDetail = () => {
     );
   }
 
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    toast({
+      title: isLiked ? "いいねを取り消しました" : "「いいね」しました",
+    });
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "共有リンクをコピーしました",
+    });
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -69,108 +83,31 @@ const ProjectDetail = () => {
         className="space-y-6"
       >
         <Card className="bg-white/50 backdrop-blur-sm border-gray-200">
-          <CardHeader>
-            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {project.title}
-            </CardTitle>
-          </CardHeader>
+          <ProjectHeader title={project.title} />
           <CardContent>
-            <div className="flex flex-wrap gap-4 items-center text-gray-600 mb-6">
-              <div className="flex items-center gap-2">
-                <User className="w-5 h-5" />
-                <span>{project.userId}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                <span>{new Date(project.createdAt).toLocaleDateString()}</span>
-              </div>
-              {project.demoUrl && (
-                <a
-                  href={project.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-primary hover:underline"
-                >
-                  <LinkIcon className="w-5 h-5" />
-                  <span>プロジェクトを見る</span>
-                </a>
-              )}
-            </div>
+            <ProjectMetadata
+              userId={project.userId}
+              createdAt={project.createdAt}
+              demoUrl={project.demoUrl}
+            />
 
             <div className="space-y-6">
               <div>
                 <p className="text-gray-600 mb-4">{project.description}</p>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-3">使用技術</h3>
-                <div className="flex flex-wrap gap-2">
-                  {project.aiTools.map((tool, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
-                    >
-                      {tool}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <ProjectTools tools={project.aiTools} />
 
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`flex-1 sm:flex-none transition-all duration-200 rounded-full ${
-                    isLiked ? "text-primary bg-primary/10" : "hover:bg-primary/5"
-                  }`}
-                  onClick={() => {
-                    setIsLiked(!isLiked);
-                    toast({
-                      title: isLiked ? "いいねを取り消しました" : "「いいね」しました",
-                    });
-                  }}
-                >
-                  <Heart
-                    className={`w-4 h-4 mr-2 transition-transform duration-200 ${
-                      isLiked ? "fill-current scale-110" : "scale-100"
-                    }`}
-                  />
-                  <span>{project.likes}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
-                  onClick={() => setShowComments(!showComments)}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  <span>{project.comments}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
-                  onClick={() => {
-                    toast({
-                      title: "共有リンクをコピーしました",
-                    });
-                  }}
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  <span>共有</span>
-                </Button>
-              </div>
-
-              {showComments && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <CommentSection projectId={project.id} />
-                </motion.div>
-              )}
+              <ProjectActions
+                projectId={project.id}
+                likes={project.likes}
+                comments={project.comments}
+                isLiked={isLiked}
+                showComments={showComments}
+                onLikeClick={handleLike}
+                onCommentClick={() => setShowComments(!showComments)}
+                onShareClick={handleShare}
+              />
             </div>
           </CardContent>
         </Card>
