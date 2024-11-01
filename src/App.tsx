@@ -7,6 +7,10 @@ import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import SignUp from "./pages/auth/SignUp";
 import MainLayout from "./components/layout/MainLayout";
+import Feed from "./pages/feed/Feed";
+import Communities from "./pages/communities/Communities";
+import Messages from "./pages/messages/Messages";
+import Projects from "./pages/projects/Projects";
 
 const queryClient = new QueryClient();
 
@@ -21,10 +25,10 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route element={<MainLayout />}>
-            <Route path="/feed" element={<div>Feed Page (Coming Soon)</div>} />
-            <Route path="/communities" element={<div>Communities (Coming Soon)</div>} />
-            <Route path="/messages" element={<div>Messages (Coming Soon)</div>} />
-            <Route path="/projects" element={<div>Projects (Coming Soon)</div>} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/communities" element={<Communities />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/projects" element={<Projects />} />
           </Route>
         </Routes>
       </BrowserRouter>
