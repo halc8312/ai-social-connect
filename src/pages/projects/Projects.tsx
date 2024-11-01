@@ -20,7 +20,7 @@ const Projects = () => {
     queryKey: ['projects'],
     queryFn: fetchProjects,
     staleTime: 1000 * 60 * 5, // 5分間キャッシュを保持
-    cacheTime: 1000 * 60 * 30, // 30分間キャッシュを維持
+    gcTime: 1000 * 60 * 30, // 30分間キャッシュを維持
   });
 
   // プロジェクトデータが更新されたら状態を更新
