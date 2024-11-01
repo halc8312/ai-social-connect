@@ -122,7 +122,7 @@ const CommunityDetail = () => {
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <CommentSection projectId={community.id} />
+                      <CommentSection projectId={community.id.toString()} />
                     </motion.div>
                   )}
                 </div>
