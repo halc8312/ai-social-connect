@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 // モックデータ
 const mockCommunities = [
@@ -46,16 +48,22 @@ const Communities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
-  // モックデータを使用するように変更
   const { data: communities = mockCommunities, isLoading, error } = useQuery({
     queryKey: ['communities'],
     queryFn: () => Promise.resolve(mockCommunities),
+    retry: 3,
+    onError: (error) => {
+      toast({
+        title: "エラーが発生しました",
+        description: "コミュニティの取得に失敗しました。時間をおいて再度お試しください。",
+        variant: "destructive",
+      });
+    },
   });
 
-  // モック用の参加処理
   const joinMutation = useMutation({
     mutationFn: async (communityId: number) => {
-      await new Promise(resolve => setTimeout(resolve, 500)); // 擬似的な遅延
+      await new Promise(resolve => setTimeout(resolve, 500));
       return { success: true };
     },
     onSuccess: () => {
@@ -64,16 +72,48 @@ const Communities = () => {
         title: "コミュニティに参加しました",
       });
     },
+    onError: (error) => {
+      toast({
+        title: "エラーが発生しました",
+        description: "コミュニティへの参加に失敗しました。もう一度お試しください。",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleJoinCommunity = async (communityId: number) => {
-    await joinMutation.mutateAsync(communityId);
-    navigate(`/communities/${communityId}`);
+    try {
+      await joinMutation.mutateAsync(communityId);
+      navigate(`/communities/${communityId}`);
+    } catch (error) {
+      console.error("Failed to join community:", error);
+    }
   };
 
   const filteredCommunities = communities.filter((community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (error) {
+    return (
+      <div className="w-full max-w-4xl mx-auto px-4 py-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>エラーが発生しました</AlertTitle>
+          <AlertDescription>
+            コミュニティの読み込みに失敗しました。
+            <Button 
+              variant="link" 
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['communities'] })}
+              className="p-0 h-auto font-normal"
+            >
+              再読み込みする
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,7 +128,12 @@ const Communities = () => {
               <DialogHeader>
                 <DialogTitle>新しいコミュニティを作成</DialogTitle>
               </DialogHeader>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault();
+                toast({
+                  title: "コミュニティを作成しました",
+                });
+              }}>
                 <div>
                   <Input
                     name="name"
