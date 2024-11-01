@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, MessageCircle, Share2 } from "lucide-react";
+import { Users, MessageCircle, Share2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import CommentSection from "@/components/comment/CommentSection";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchCommunityById, joinCommunity } from "@/api/communities";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CommunityDetail = () => {
   const { toast } = useToast();
@@ -21,6 +22,14 @@ const CommunityDetail = () => {
     queryKey: ['community', id],
     queryFn: () => fetchCommunityById(id!),
     enabled: !!id,
+    retry: 2,
+    onError: (error) => {
+      toast({
+        title: "エラーが発生しました",
+        description: error instanceof Error ? error.message : "コミュニティの取得に失敗しました",
+        variant: "destructive",
+      });
+    }
   });
 
   const community = response?.data;
@@ -33,13 +42,28 @@ const CommunityDetail = () => {
         title: "コミュニティに参加しました",
       });
     },
+    onError: (error) => {
+      toast({
+        title: "参加に失敗しました",
+        description: error instanceof Error ? error.message : "もう一度お試しください",
+        variant: "destructive",
+      });
+    }
   });
 
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast({
-      title: "共有リンクをコピーしました",
-    });
+    try {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "共有リンクをコピーしました",
+      });
+    } catch (error) {
+      toast({
+        title: "リンクのコピーに失敗しました",
+        description: "別の方法で共有してください",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!id) {
@@ -49,8 +73,13 @@ const CommunityDetail = () => {
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <p className="text-destructive">エラーが発生しました。もう一度お試しください。</p>
+      <div className="w-full max-w-4xl mx-auto px-4 py-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            エラーが発生しました。ページを更新するか、しばらく時間をおいてから再度アクセスしてください。
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -64,11 +93,15 @@ const CommunityDetail = () => {
       >
         <Card className="bg-white/50 backdrop-blur-sm border-gray-200">
           {isLoading || !community ? (
-            <CardContent className="p-6">
+            <CardContent className="p-6 space-y-4">
               <Skeleton className="h-8 w-3/4 mb-4" />
               <Skeleton className="h-4 w-1/4 mb-6" />
               <Skeleton className="h-4 w-full mb-2" />
               <Skeleton className="h-4 w-5/6" />
+              <div className="flex gap-2 mt-4">
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-32" />
+              </div>
             </CardContent>
           ) : (
             <>
@@ -93,7 +126,7 @@ const CommunityDetail = () => {
                       onClick={() => joinMutation.mutateAsync(Number(community.id))}
                       disabled={community.joined || joinMutation.isPending}
                     >
-                      {community.joined ? "参加中" : "コミュニティに参加"}
+                      {joinMutation.isPending ? "処理中..." : community.joined ? "参加中" : "コミュニティに参加"}
                     </Button>
                     <Button
                       variant="ghost"
