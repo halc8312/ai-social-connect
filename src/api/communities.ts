@@ -1,8 +1,15 @@
-import { Community, CreateCommunityRequest, UpdateCommunityRequest, CommunitiesResponse, CommunityResponse, JoinCommunityResponse } from "@/types";
+import { 
+  Community, 
+  CreateCommunityRequest, 
+  UpdateCommunityRequest, 
+  CommunitiesResponse, 
+  ApiResponse,
+  JoinCommunityResponse 
+} from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
-export const fetchCommunities = async (): Promise<Community[]> => {
+export const fetchCommunities = async (): Promise<ApiResponse<CommunitiesResponse>> => {
   const response = await fetch(`${BASE_URL}/communities`);
   if (!response.ok) {
     throw new Error('Failed to fetch communities');
@@ -10,7 +17,7 @@ export const fetchCommunities = async (): Promise<Community[]> => {
   return response.json();
 };
 
-export const fetchCommunityById = async (id: string): Promise<Community> => {
+export const fetchCommunityById = async (id: string): Promise<ApiResponse<Community>> => {
   const response = await fetch(`${BASE_URL}/communities/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch community');
@@ -18,7 +25,7 @@ export const fetchCommunityById = async (id: string): Promise<Community> => {
   return response.json();
 };
 
-export const createCommunity = async (data: CreateCommunityRequest): Promise<Community> => {
+export const createCommunity = async (data: CreateCommunityRequest): Promise<ApiResponse<Community>> => {
   const response = await fetch(`${BASE_URL}/communities`, {
     method: 'POST',
     headers: {
@@ -38,6 +45,23 @@ export const joinCommunity = async (communityId: number): Promise<JoinCommunityR
   });
   if (!response.ok) {
     throw new Error('Failed to join community');
+  }
+  return response.json();
+};
+
+export const updateCommunity = async (
+  id: number, 
+  data: UpdateCommunityRequest
+): Promise<ApiResponse<Community>> => {
+  const response = await fetch(`${BASE_URL}/communities/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update community');
   }
   return response.json();
 };

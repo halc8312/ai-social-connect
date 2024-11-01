@@ -34,32 +34,11 @@ export interface Community {
   description: string;
   members: number;
   joined: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface CreateCommunityRequest {
-  name: string;
-  description: string;
-}
-
-export interface UpdateCommunityRequest {
-  name?: string;
-  description?: string;
-}
-
-export interface CommunitiesResponse {
-  communities: Community[];
-  total: number;
-}
-
-export interface CommunityResponse {
-  community: Community;
-}
-
-export interface JoinCommunityResponse {
-  success: boolean;
-  message: string;
+  createdAt: Date;
+  updatedAt: Date;
+  ownerId?: string;
+  tags?: string[];
+  imageUrl?: string;
 }
 
 export interface Project {
@@ -72,4 +51,72 @@ export interface Project {
   likes: number;
   comments: number;
   createdAt: Date;
+  updatedAt?: Date;
+  status?: 'draft' | 'published';
+  githubUrl?: string;
+  demoUrl?: string;
+}
+
+// API Request/Response types
+export interface CreateCommunityRequest {
+  name: string;
+  description: string;
+  tags?: string[];
+  imageUrl?: string;
+}
+
+export interface UpdateCommunityRequest {
+  name?: string;
+  description?: string;
+  tags?: string[];
+  imageUrl?: string;
+}
+
+export interface CreateProjectRequest {
+  title: string;
+  description: string;
+  aiTools: string[];
+  images?: string[];
+  githubUrl?: string;
+  demoUrl?: string;
+}
+
+export interface UpdateProjectRequest {
+  title?: string;
+  description?: string;
+  aiTools?: string[];
+  images?: string[];
+  githubUrl?: string;
+  demoUrl?: string;
+  status?: 'draft' | 'published';
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  error?: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+export interface CommunitiesResponse extends PaginatedResponse<Community> {}
+export interface ProjectsResponse extends PaginatedResponse<Project> {}
+
+export interface JoinCommunityResponse {
+  success: boolean;
+  message: string;
+  communityId: number;
+}
+
+export interface LikeProjectResponse {
+  success: boolean;
+  message: string;
+  projectId: string;
+  likes: number;
 }
