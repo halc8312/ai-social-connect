@@ -33,8 +33,11 @@ const CreateProject = () => {
     createMutation.mutate({
       title,
       description,
-      aiTools: [], // TODO: AIツールの選択機能を実装
-      images: [], // TODO: 画像アップロード機能を実装
+      aiTools: [],
+      images: [],
+      status: 'draft' as const, // statusを追加
+      githubUrl: "",
+      demoUrl: ""
     });
   };
 

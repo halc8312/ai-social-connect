@@ -17,7 +17,7 @@ interface ProjectCardProps {
 const ProjectCard = memo(({ project, isPending, onLike }: ProjectCardProps) => {
   const { likedProjects, activeCommentSection, toggleComments } = useProjectStore();
   const { toast } = useToast();
-  const isLiked = likedProjects.includes(project.id);
+  const isLiked = likedProjects.has(project.id); // includesをhasに変更
 
   const handleLike = async () => {
     try {

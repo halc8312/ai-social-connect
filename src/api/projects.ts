@@ -1,17 +1,12 @@
 import { 
   Project, 
   ApiResponse, 
-  ProjectsResponse 
+  ProjectsResponse,
+  LikeProjectResponse 
 } from "@/types";
-import { toast } from "sonner";
+import { handleApiError } from "@/utils/errorHandling";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
-
-const handleApiError = (error: unknown, customMessage: string) => {
-  const errorMessage = error instanceof Error ? error.message : customMessage;
-  toast.error(errorMessage);
-  throw new Error(errorMessage);
-};
 
 export const fetchProjects = async (): Promise<ApiResponse<ProjectsResponse>> => {
   try {
@@ -45,6 +40,24 @@ export const fetchProjectById = async (id: string): Promise<ApiResponse<Project>
   }
 };
 
+export const likeProject = async (projectId: string): Promise<LikeProjectResponse> => {
+  try {
+    const response = await fetch(`${BASE_URL}/projects/${projectId}/like`, {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      throw new Error(
+        response.status === 404 
+          ? 'プロジェクトが見つかりませんでした' 
+          : 'いいねの更新に失敗しました'
+      );
+    }
+    return response.json();
+  } catch (error) {
+    return handleApiError(error, 'いいねの更新中にエラーが発生しました');
+  }
+};
+
 export const createProject = async (data: Omit<Project, "id" | "userId" | "likes" | "comments" | "createdAt">): Promise<ApiResponse<Project>> => {
   try {
     const response = await fetch(`${BASE_URL}/projects`, {
@@ -64,23 +77,5 @@ export const createProject = async (data: Omit<Project, "id" | "userId" | "likes
     return response.json();
   } catch (error) {
     handleApiError(error, 'プロジェクトの作成中にエラーが発生しました');
-  }
-};
-
-export const likeProject = async (projectId: string): Promise<ApiResponse<{ likes: number }>> => {
-  try {
-    const response = await fetch(`${BASE_URL}/projects/${projectId}/like`, {
-      method: 'POST',
-    });
-    if (!response.ok) {
-      throw new Error(
-        response.status === 404 
-          ? 'プロジェクトが見つかりませんでした' 
-          : 'いいねの更新に失敗しました'
-      );
-    }
-    return response.json();
-  } catch (error) {
-    handleApiError(error, 'いいねの更新中にエラーが発生しました');
   }
 };
