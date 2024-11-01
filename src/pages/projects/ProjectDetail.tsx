@@ -78,15 +78,15 @@ const ProjectDetail = () => {
             <div className="flex flex-wrap gap-4 items-center text-gray-600 mb-6">
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                <span>{project.creator}</span>
+                <span>{project.userId}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                <span>{project.date}</span>
+                <span>{new Date(project.createdAt).toLocaleDateString()}</span>
               </div>
-              {project.projectUrl && (
+              {project.demoUrl && (
                 <a
-                  href={project.projectUrl}
+                  href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-primary hover:underline"
@@ -100,13 +100,12 @@ const ProjectDetail = () => {
             <div className="space-y-6">
               <div>
                 <p className="text-gray-600 mb-4">{project.description}</p>
-                <p className="text-gray-600">{project.longDescription}</p>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-3">使用技術</h3>
                 <div className="flex flex-wrap gap-2">
-                  {project.tools.map((tool, index) => (
+                  {project.aiTools.map((tool, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
