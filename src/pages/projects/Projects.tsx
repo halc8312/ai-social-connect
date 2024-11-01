@@ -29,10 +29,10 @@ const Projects = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">AIプロジェクト</h1>
-        <Button>プロジェクトを投稿</Button>
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">AIプロジェクト</h1>
+        <Button className="w-full sm:w-auto">プロジェクトを投稿</Button>
       </div>
 
       <div className="mb-8">
@@ -47,30 +47,30 @@ const Projects = () => {
 
       <div className="grid gap-6">
         {projects.map((project, index) => (
-          <Card key={index} className="hover:shadow-lg transition-shadow">
+          <Card key={index} className="w-full hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle>{project.title}</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl">{project.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">{project.description}</p>
+              <p className="text-gray-600 mb-4 text-sm sm:text-base">{project.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.tools.map((tool, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm whitespace-nowrap"
                   >
                     {tool}
                   </span>
                 ))}
               </div>
-              <div className="flex gap-4">
-                <Button variant="ghost" size="sm">
+              <div className="flex flex-wrap gap-2 sm:gap-4">
+                <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
                   <Heart className="w-4 h-4 mr-2" />
-                  {project.likes}
+                  <span>{project.likes}</span>
                 </Button>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
                   <MessageCircle className="w-4 h-4 mr-2" />
-                  {project.comments}
+                  <span>{project.comments}</span>
                 </Button>
               </div>
             </CardContent>

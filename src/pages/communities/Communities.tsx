@@ -23,9 +23,12 @@ const Communities = () => {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">コミュニティを探す</h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold">コミュニティを探す</h1>
+          <Button className="w-full sm:w-auto">新規作成</Button>
+        </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           <Input
@@ -37,18 +40,18 @@ const Communities = () => {
 
       <div className="grid gap-6">
         {communities.map((community, index) => (
-          <Card key={index}>
+          <Card key={index} className="w-full">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{community.name}</span>
-                <Button>参加する</Button>
+              <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <span className="text-xl sm:text-2xl">{community.name}</span>
+                <Button className="w-full sm:w-auto">参加する</Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-2">{community.description}</p>
+              <p className="text-gray-600 mb-4 text-sm sm:text-base">{community.description}</p>
               <div className="flex items-center text-sm text-gray-500">
                 <Users className="w-4 h-4 mr-1" />
-                {community.members}メンバー
+                <span>{community.members}メンバー</span>
               </div>
             </CardContent>
           </Card>
