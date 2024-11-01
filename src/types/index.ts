@@ -34,6 +34,32 @@ export interface Community {
   description: string;
   members: number;
   joined: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface CreateCommunityRequest {
+  name: string;
+  description: string;
+}
+
+export interface UpdateCommunityRequest {
+  name?: string;
+  description?: string;
+}
+
+export interface CommunitiesResponse {
+  communities: Community[];
+  total: number;
+}
+
+export interface CommunityResponse {
+  community: Community;
+}
+
+export interface JoinCommunityResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface Project {

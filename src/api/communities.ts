@@ -1,4 +1,4 @@
-import { Community } from "@/types";
+import { Community, CreateCommunityRequest, UpdateCommunityRequest, CommunitiesResponse, CommunityResponse, JoinCommunityResponse } from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
@@ -18,7 +18,7 @@ export const fetchCommunityById = async (id: string): Promise<Community> => {
   return response.json();
 };
 
-export const createCommunity = async (data: Omit<Community, "id" | "members" | "joined">): Promise<Community> => {
+export const createCommunity = async (data: CreateCommunityRequest): Promise<Community> => {
   const response = await fetch(`${BASE_URL}/communities`, {
     method: 'POST',
     headers: {
@@ -32,11 +32,12 @@ export const createCommunity = async (data: Omit<Community, "id" | "members" | "
   return response.json();
 };
 
-export const joinCommunity = async (communityId: number): Promise<void> => {
+export const joinCommunity = async (communityId: number): Promise<JoinCommunityResponse> => {
   const response = await fetch(`${BASE_URL}/communities/${communityId}/join`, {
     method: 'POST',
   });
   if (!response.ok) {
     throw new Error('Failed to join community');
   }
+  return response.json();
 };
