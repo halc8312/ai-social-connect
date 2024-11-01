@@ -4,36 +4,38 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ImagePlus } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createProject } from "@/api/projects";
 
 const CreateProject = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !description.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      // MVP段階では実際のAPI呼び出しは実装せず、成功トーストのみ表示
-      await new Promise(resolve => setTimeout(resolve, 1000));
+  const createMutation = useMutation({
+    mutationFn: createProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast({
         title: "プロジェクトを作成しました",
         description: "プロジェクト一覧に反映されるまで少々お待ちください",
       });
       setTitle("");
       setDescription("");
-    } catch (error) {
-      toast({
-        title: "エラーが発生しました",
-        description: "もう一度お試しください",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !description.trim()) return;
+
+    createMutation.mutate({
+      title,
+      description,
+      aiTools: [], // TODO: AIツールの選択機能を実装
+      images: [], // TODO: 画像アップロード機能を実装
+    });
   };
 
   return (
@@ -55,9 +57,9 @@ const CreateProject = () => {
         </Button>
         <Button 
           type="submit" 
-          disabled={isSubmitting || !title.trim() || !description.trim()}
+          disabled={createMutation.isPending || !title.trim() || !description.trim()}
         >
-          作成する
+          {createMutation.isPending ? "作成中..." : "作成する"}
         </Button>
       </div>
     </form>
