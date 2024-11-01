@@ -4,24 +4,17 @@ import { Heart, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CommentSection from "@/components/comment/CommentSection";
 import { Project } from "@/types";
+import { useProjectStore } from "@/stores/projectStore";
 
 interface ProjectCardProps {
   project: Project;
-  isLiked: boolean;
-  activeCommentSection: number | null;
-  onLike: (projectId: string) => void;
-  onToggleComments: (projectId: number) => void;
   isPending?: boolean;
 }
 
-const ProjectCard = ({
-  project,
-  isLiked,
-  activeCommentSection,
-  onLike,
-  onToggleComments,
-  isPending
-}: ProjectCardProps) => {
+const ProjectCard = ({ project, isPending }: ProjectCardProps) => {
+  const { likedProjects, activeCommentSection, toggleLike, toggleComments } = useProjectStore();
+  const isLiked = likedProjects.includes(project.id);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,7 +50,7 @@ const ProjectCard = ({
               className={`flex-1 sm:flex-none transition-all duration-200 rounded-full ${
                 isLiked ? "text-primary bg-primary/10" : "hover:bg-primary/5"
               }`}
-              onClick={() => onLike(project.id)}
+              onClick={() => toggleLike(project.id)}
               disabled={isPending}
             >
               <Heart
@@ -71,7 +64,7 @@ const ProjectCard = ({
               variant="ghost"
               size="sm"
               className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
-              onClick={() => onToggleComments(Number(project.id))}
+              onClick={() => toggleComments(Number(project.id))}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
               <span>{project.comments}</span>

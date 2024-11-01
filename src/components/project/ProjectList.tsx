@@ -6,20 +6,12 @@ import { Project } from "@/types";
 interface ProjectListProps {
   projects: Project[];
   isLoading: boolean;
-  likedProjects: string[];
-  activeCommentSection: number | null;
-  onLike: (projectId: string) => void;
-  onToggleComments: (projectId: number) => void;
   isPending?: boolean;
 }
 
 const ProjectList = ({
   projects,
   isLoading,
-  likedProjects,
-  activeCommentSection,
-  onLike,
-  onToggleComments,
   isPending
 }: ProjectListProps) => {
   if (isLoading) {
@@ -56,10 +48,6 @@ const ProjectList = ({
         <ProjectCard
           key={project.id}
           project={project}
-          isLiked={likedProjects.includes(project.id)}
-          activeCommentSection={activeCommentSection}
-          onLike={onLike}
-          onToggleComments={onToggleComments}
           isPending={isPending}
         />
       ))}

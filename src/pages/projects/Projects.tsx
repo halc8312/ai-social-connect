@@ -7,38 +7,32 @@ import ProjectSearch from "@/components/project/ProjectSearch";
 import ProjectList from "@/components/project/ProjectList";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchProjects, likeProject } from "@/api/projects";
+import { useProjectStore } from "@/stores/projectStore";
 
 const Projects = () => {
   const [showCreate, setShowCreate] = useState(false);
-  const [activeCommentSection, setActiveCommentSection] = useState<number | null>(null);
-  const [likedProjects, setLikedProjects] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { setProjects } = useProjectStore();
 
   const { data: projects = [], isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
+    onSuccess: (data) => {
+      setProjects(data);
+    },
   });
 
   const likeMutation = useMutation({
     mutationFn: likeProject,
-    onSuccess: (_, projectId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setLikedProjects(prev => 
-        prev.includes(projectId) 
-          ? prev.filter(id => id !== projectId)
-          : [...prev, projectId]
-      );
       toast({
-        title: likedProjects.includes(projectId) ? "いいねを取り消しました" : "「いいね」しました",
+        title: "いいねを更新しました",
       });
     },
   });
-
-  const toggleComments = (projectId: number) => {
-    setActiveCommentSection(activeCommentSection === projectId ? null : projectId);
-  };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -106,10 +100,6 @@ const Projects = () => {
               <ProjectList
                 projects={filteredProjects}
                 isLoading={isLoading}
-                likedProjects={likedProjects}
-                activeCommentSection={activeCommentSection}
-                onLike={(projectId) => likeMutation.mutate(projectId)}
-                onToggleComments={toggleComments}
                 isPending={likeMutation.isPending}
               />
             </div>
