@@ -3,9 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Heart, Share2 } from "lucide-react";
 import CreatePost from "@/components/post/CreatePost";
 import { useToast } from "@/hooks/use-toast";
+import CommentSection from "@/components/comment/CommentSection";
+import { useState } from "react";
 
 const Feed = () => {
   const { toast } = useToast();
+  const [activeCommentSection, setActiveCommentSection] = useState<number | null>(null);
 
   const handleLike = () => {
     toast({
@@ -17,6 +20,10 @@ const Feed = () => {
     toast({
       title: "共有リンクをコピーしました",
     });
+  };
+
+  const toggleComments = (postId: number) => {
+    setActiveCommentSection(activeCommentSection === postId ? null : postId);
   };
 
   return (
@@ -50,7 +57,12 @@ const Feed = () => {
                       <Heart className="w-4 h-4 mr-2" />
                       <span>123</span>
                     </Button>
-                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex-1 sm:flex-none"
+                      onClick={() => toggleComments(post)}
+                    >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       <span>45</span>
                     </Button>
@@ -59,6 +71,9 @@ const Feed = () => {
                       <span>共有</span>
                     </Button>
                   </div>
+                  {activeCommentSection === post && (
+                    <CommentSection postId={post.toString()} />
+                  )}
                 </div>
               </div>
             </CardContent>

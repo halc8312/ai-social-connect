@@ -5,15 +5,21 @@ import { Search, Heart, MessageCircle } from "lucide-react";
 import CreateProject from "@/components/project/CreateProject";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import CommentSection from "@/components/comment/CommentSection";
 
 const Projects = () => {
   const [showCreate, setShowCreate] = useState(false);
+  const [activeCommentSection, setActiveCommentSection] = useState<number | null>(null);
   const { toast } = useToast();
 
   const handleLike = () => {
     toast({
       title: "「いいね」しました",
     });
+  };
+
+  const toggleComments = (projectId: number) => {
+    setActiveCommentSection(activeCommentSection === projectId ? null : projectId);
   };
 
   const projects = [
@@ -89,11 +95,19 @@ const Projects = () => {
                       <Heart className="w-4 h-4 mr-2" />
                       <span>{project.likes}</span>
                     </Button>
-                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex-1 sm:flex-none"
+                      onClick={() => toggleComments(index)}
+                    >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       <span>{project.comments}</span>
                     </Button>
                   </div>
+                  {activeCommentSection === index && (
+                    <CommentSection projectId={index.toString()} />
+                  )}
                 </CardContent>
               </Card>
             ))}
