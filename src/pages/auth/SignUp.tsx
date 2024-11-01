@@ -52,6 +52,10 @@ const SignUp = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!e.key) return; // キーが未定義の場合は早期リターン
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-secondary/5 px-4">
       <Card className="w-full max-w-md">
@@ -71,6 +75,7 @@ const SignUp = () => {
                 placeholder="名前"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="input-primary"
                 disabled={isLoading}
                 aria-invalid={!!errors.name}
@@ -90,6 +95,7 @@ const SignUp = () => {
                 placeholder="メールアドレス"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="input-primary"
                 disabled={isLoading}
                 aria-invalid={!!errors.email}
@@ -109,6 +115,7 @@ const SignUp = () => {
                 placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="input-primary"
                 disabled={isLoading}
                 aria-invalid={!!errors.password}
