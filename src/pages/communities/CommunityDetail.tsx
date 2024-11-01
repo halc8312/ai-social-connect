@@ -5,10 +5,22 @@ import { useToast } from "@/hooks/use-toast";
 import CommentSection from "@/components/comment/CommentSection";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 const CommunityDetail = () => {
   const { toast } = useToast();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
+
+  // この部分でコミュニティの情報を取得する必要があります
+  const communityData = {
+    name: "コミュニティが見つかりません",
+    members: 0,
+    description: "指定されたコミュニティは存在しないか、アクセスできません。",
+    topics: [],
+    recentActivities: []
+  };
 
   const handleShare = () => {
     toast({
@@ -16,17 +28,10 @@ const CommunityDetail = () => {
     });
   };
 
-  const communityData = {
-    name: "ChatGPT Users",
-    members: 1234,
-    description: "ChatGPTを使用した開発やプロジェクトについて議論するコミュニティです。最新の活用方法や、効果的なプロンプトの共有、APIを使用した開発のTipsなど、幅広い話題について情報交換しています。",
-    topics: ["ChatGPT", "AI開発", "プロンプトエンジニアリング", "APIインテグレーション"],
-    recentActivities: [
-      "新しいメンバー5名が参加しました",
-      "「効果的なプロンプト設計」についての議論が活発です",
-      "次回のオンラインミートアップが予定されています"
-    ]
-  };
+  if (!id) {
+    navigate("/communities");
+    return null;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,33 +59,37 @@ const CommunityDetail = () => {
             <p className="text-gray-600 mb-6">{communityData.description}</p>
             
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-3">トピック</h3>
-                <div className="flex flex-wrap gap-2">
-                  {communityData.topics.map((topic, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
-                    >
-                      {topic}
-                    </span>
-                  ))}
+              {communityData.topics.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">トピック</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {communityData.topics.map((topic, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
+                      >
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <h3 className="text-lg font-semibold mb-3">最近の活動</h3>
-                <div className="space-y-2">
-                  {communityData.recentActivities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-600"
-                    >
-                      {activity}
-                    </div>
-                  ))}
+              {communityData.recentActivities.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">最近の活動</h3>
+                  <div className="space-y-2">
+                    {communityData.recentActivities.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-600"
+                      >
+                        {activity}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex gap-2">
                 <Button
