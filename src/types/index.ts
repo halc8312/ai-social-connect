@@ -1,3 +1,21 @@
+// 基本的なレスポンス型
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  error?: string;
+  status: number;
+}
+
+// ページネーション用の型
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+// ユーザー関連の型
 export interface User {
   id: string;
   email: string;
@@ -9,25 +27,27 @@ export interface User {
   createdAt: Date;
 }
 
-export interface Post {
+// プロジェクト関連の型
+export interface Project {
   id: string;
   userId: string;
-  content: string;
+  title: string;
+  description: string;
+  aiTools: string[];
   images?: string[];
-  aiTools?: string[];
   likes: number;
   comments: number;
   createdAt: Date;
+  updatedAt?: Date;
+  status: 'draft' | 'published';
+  githubUrl?: string;
+  demoUrl?: string;
 }
 
-export interface Comment {
-  id: string;
-  postId: string;
-  userId: string;
-  content: string;
-  createdAt: Date;
-}
+export type CreateProjectRequest = Omit<Project, 'id' | 'userId' | 'likes' | 'comments' | 'createdAt' | 'updatedAt'>;
+export type UpdateProjectRequest = Partial<CreateProjectRequest>;
 
+// コミュニティ関連の型
 export interface Community {
   id: number;
   name: string;
@@ -41,82 +61,17 @@ export interface Community {
   imageUrl?: string;
 }
 
-export interface Project {
-  id: string;
-  userId: string;
-  title: string;
-  description: string;
-  aiTools: string[];
-  images?: string[];
-  likes: number;
-  comments: number;
-  createdAt: Date;
-  updatedAt?: Date;
-  status?: 'draft' | 'published';
-  githubUrl?: string;
-  demoUrl?: string;
-}
+export type CreateCommunityRequest = Omit<Community, 'id' | 'members' | 'joined' | 'createdAt' | 'updatedAt'>;
+export type UpdateCommunityRequest = Partial<CreateCommunityRequest>;
 
-// API Request/Response types
-export interface CreateCommunityRequest {
-  name: string;
-  description: string;
-  tags?: string[];
-  imageUrl?: string;
-}
+// レスポンス型
+export type CommunitiesResponse = PaginatedResponse<Community>;
+export type ProjectsResponse = PaginatedResponse<Project>;
 
-export interface UpdateCommunityRequest {
-  name?: string;
-  description?: string;
-  tags?: string[];
-  imageUrl?: string;
-}
-
-export interface CreateProjectRequest {
-  title: string;
-  description: string;
-  aiTools: string[];
-  images?: string[];
-  githubUrl?: string;
-  demoUrl?: string;
-}
-
-export interface UpdateProjectRequest {
-  title?: string;
-  description?: string;
-  aiTools?: string[];
-  images?: string[];
-  githubUrl?: string;
-  demoUrl?: string;
-  status?: 'draft' | 'published';
-}
-
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  error?: string;
-}
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  limit: number;
-  hasMore: boolean;
-}
-
-export interface CommunitiesResponse extends PaginatedResponse<Community> {}
-export interface ProjectsResponse extends PaginatedResponse<Project> {}
-
-export interface JoinCommunityResponse {
+export interface JoinCommunityResponse extends ApiResponse<{ communityId: number }> {
   success: boolean;
-  message: string;
-  communityId: number;
 }
 
-export interface LikeProjectResponse {
+export interface LikeProjectResponse extends ApiResponse<{ projectId: string; likes: number }> {
   success: boolean;
-  message: string;
-  projectId: string;
-  likes: number;
 }
