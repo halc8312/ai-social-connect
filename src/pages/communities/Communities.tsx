@@ -14,8 +14,31 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchCommunities, createCommunity, joinCommunity } from "@/api/communities";
-import type { Community } from "@/types";
+
+// モックデータ
+const mockCommunities = [
+  {
+    id: 1,
+    name: "AI開発者コミュニティ",
+    description: "AIの開発や応用について議論し、知識を共有するコミュニティです。",
+    members: 150,
+    joined: false
+  },
+  {
+    id: 2,
+    name: "機械学習研究会",
+    description: "最新の機械学習技術について学び合い、実践的なプロジェクトを進めるグループです。",
+    members: 85,
+    joined: true
+  },
+  {
+    id: 3,
+    name: "自然言語処理の集い",
+    description: "自然言語処理に関する技術や応用事例について情報交換を行うコミュニティです。",
+    members: 120,
+    joined: false
+  }
+];
 
 const Communities = () => {
   const { toast } = useToast();
@@ -23,24 +46,18 @@ const Communities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: communities = [], isLoading, error } = useQuery({
+  // モックデータを使用するように変更
+  const { data: communities = mockCommunities, isLoading, error } = useQuery({
     queryKey: ['communities'],
-    queryFn: fetchCommunities,
+    queryFn: () => Promise.resolve(mockCommunities),
   });
 
-  const createMutation = useMutation({
-    mutationFn: createCommunity,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['communities'] });
-      toast({
-        title: "コミュニティを作成しました",
-        description: "新しいコミュニティの管理者になりました",
-      });
-    },
-  });
-
+  // モック用の参加処理
   const joinMutation = useMutation({
-    mutationFn: joinCommunity,
+    mutationFn: async (communityId: number) => {
+      await new Promise(resolve => setTimeout(resolve, 500)); // 擬似的な遅延
+      return { success: true };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communities'] });
       toast({
@@ -53,32 +70,6 @@ const Communities = () => {
     await joinMutation.mutateAsync(communityId);
     navigate(`/communities/${communityId}`);
   };
-
-  const handleCreateCommunity = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-
-    if (!name.trim() || !description.trim()) {
-      toast({
-        title: "入力エラー",
-        description: "コミュニティ名と説明を入力してください",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await createMutation.mutateAsync({ name, description });
-  };
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-destructive">エラーが発生しました。もう一度お試しください。</p>
-      </div>
-    );
-  }
 
   const filteredCommunities = communities.filter((community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -97,7 +88,7 @@ const Communities = () => {
               <DialogHeader>
                 <DialogTitle>新しいコミュニティを作成</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleCreateCommunity} className="space-y-4">
+              <form className="space-y-4">
                 <div>
                   <Input
                     name="name"
@@ -113,11 +104,8 @@ const Communities = () => {
                   />
                 </div>
                 <div className="flex justify-end">
-                  <Button 
-                    type="submit" 
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "作成中..." : "作成する"}
+                  <Button type="submit">
+                    作成する
                   </Button>
                 </div>
               </form>
