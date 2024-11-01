@@ -6,10 +6,12 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjectById } from "@/api/projects";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import ProjectHeader from "@/components/project/ProjectHeader";
 import ProjectMetadata from "@/components/project/ProjectMetadata";
 import ProjectTools from "@/components/project/ProjectTools";
 import ProjectActions from "@/components/project/ProjectActions";
+import { PageLoadingState } from "@/components/loading/PageLoadingState";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,19 +28,14 @@ const ProjectDetail = () => {
   const project = response?.data;
 
   if (isLoading) {
-    return (
-      <div className="w-full max-w-4xl mx-auto px-4 animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-        <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-        <div className="h-4 bg-gray-200 rounded w-1/3" />
-      </div>
-    );
+    return <PageLoadingState />;
   }
 
   if (error) {
     return (
       <div className="w-full max-w-4xl mx-auto px-4">
         <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
           <AlertTitle>エラーが発生しました</AlertTitle>
           <AlertDescription>
             プロジェクトの読み込み中にエラーが発生しました。
@@ -53,6 +50,7 @@ const ProjectDetail = () => {
     return (
       <div className="w-full max-w-4xl mx-auto px-4">
         <Alert>
+          <AlertCircle className="h-4 w-4" />
           <AlertTitle>プロジェクトが見つかりません</AlertTitle>
           <AlertDescription>
             指定されたプロジェクトは存在しないか、削除された可能性があります。
