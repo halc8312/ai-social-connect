@@ -16,12 +16,14 @@ const Projects = () => {
   const queryClient = useQueryClient();
   const { setProjects } = useProjectStore();
 
-  const { data: projects = [], isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
     staleTime: 1000 * 60 * 5, // 5分間キャッシュを保持
     gcTime: 1000 * 60 * 30, // 30分間キャッシュを維持
   });
+
+  const projects = data?.data?.items || [];
 
   // プロジェクトデータが更新されたら状態を更新
   useMemo(() => {
