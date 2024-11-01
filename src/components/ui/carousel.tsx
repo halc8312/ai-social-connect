@@ -3,7 +3,6 @@ import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -32,11 +31,9 @@ const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
 function useCarousel() {
   const context = React.useContext(CarouselContext)
-
   if (!context) {
     throw new Error("useCarousel must be used within a <Carousel />")
   }
-
   return context
 }
 
@@ -85,10 +82,13 @@ const Carousel = React.forwardRef<
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === "ArrowLeft") {
+        if (!event || !event.key) return
+        
+        const key = event.key.toLowerCase()
+        if (key === "arrowleft") {
           event.preventDefault()
           scrollPrev()
-        } else if (event.key === "ArrowRight") {
+        } else if (key === "arrowright") {
           event.preventDefault()
           scrollNext()
         }
@@ -134,7 +134,7 @@ const Carousel = React.forwardRef<
       >
         <div
           ref={ref}
-          onKeyDownCapture={handleKeyDown}
+          onKeyDown={handleKeyDown}
           className={cn("relative", className)}
           role="region"
           aria-roledescription="carousel"
@@ -204,7 +204,7 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        "absolute  h-8 w-8 rounded-full",
+        "absolute h-8 w-8 rounded-full",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
