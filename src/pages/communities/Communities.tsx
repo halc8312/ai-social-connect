@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Users } from "lucide-react";
@@ -12,13 +11,21 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+interface Community {
+  id: number;
+  name: string;
+  members: number;
+  description: string;
+  joined: boolean;
+}
 
 const Communities = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
-  const communities = [
+  const [communities, setCommunities] = useState<Community[]>([
     {
       id: 1,
       name: "ChatGPT Users",
@@ -40,9 +47,15 @@ const Communities = () => {
       description: "AIモデルの開発や実装について情報交換する場",
       joined: false,
     },
-  ];
+  ]);
 
   const handleJoinCommunity = (communityId: number) => {
+    setCommunities(communities.map(community => 
+      community.id === communityId 
+        ? { ...community, joined: !community.joined }
+        : community
+    ));
+    
     toast({
       title: "コミュニティに参加しました",
       description: "メンバーとして活動を開始できます",
@@ -65,11 +78,20 @@ const Communities = () => {
       return;
     }
 
+    const newCommunity: Community = {
+      id: communities.length + 1,
+      name,
+      description,
+      members: 1,
+      joined: true,
+    };
+
+    setCommunities([...communities, newCommunity]);
     toast({
       title: "コミュニティを作成しました",
       description: "新しいコミュニティの管理者になりました",
     });
-    navigate(`/communities/${Date.now()}`);
+    navigate(`/communities/${newCommunity.id}`);
   };
 
   return (
