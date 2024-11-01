@@ -6,12 +6,31 @@ import CommentSection from "@/components/comment/CommentSection";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchCommunityById, joinCommunity } from "@/api/communities";
 
 const CommunityDetail = () => {
   const { toast } = useToast();
   const { id } = useParams();
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: community, isLoading } = useQuery({
+    queryKey: ['community', id],
+    queryFn: () => fetchCommunityById(id!),
+    enabled: !!id,
+  });
+
+  const joinMutation = useMutation({
+    mutationFn: joinCommunity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community', id] });
+      toast({
+        title: "コミュニティに参加しました",
+      });
+    },
+  });
 
   const handleShare = () => {
     toast({
@@ -22,6 +41,14 @@ const CommunityDetail = () => {
   if (!id) {
     navigate("/communities");
     return null;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!community) {
+    return <div>Community not found</div>;
   }
 
   return (
@@ -35,20 +62,24 @@ const CommunityDetail = () => {
           <CardHeader>
             <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                コミュニティ名
+                {community.name}
               </span>
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity">
-                コミュニティに参加
+              <Button 
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+                onClick={() => joinMutation.mutate(community.id)}
+                disabled={community.joined}
+              >
+                {community.joined ? "参加中" : "コミュニティに参加"}
               </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-gray-600 mb-4">
               <Users className="w-5 h-5" />
-              <span>0メンバー</span>
+              <span>{community.members}メンバー</span>
             </div>
             <p className="text-gray-600 mb-6">
-              コミュニティの説明がここに表示されます。
+              {community.description}
             </p>
             
             <div className="space-y-6">

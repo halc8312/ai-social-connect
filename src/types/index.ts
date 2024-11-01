@@ -29,12 +29,11 @@ export interface Comment {
 }
 
 export interface Community {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  aiTool: string;
   members: number;
-  createdAt: Date;
+  joined: boolean;
 }
 
 export interface Project {

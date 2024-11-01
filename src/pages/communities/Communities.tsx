@@ -12,36 +12,63 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface Community {
-  id: number;
-  name: string;
-  members: number;
-  description: string;
-  joined: boolean;
-}
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchCommunities, createCommunity, joinCommunity } from "@/api/communities";
+import type { Community } from "@/types";
 
 const Communities = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const queryClient = useQueryClient();
 
-  const handleJoinCommunity = (communityId: number) => {
-    setCommunities(communities.map(community => 
-      community.id === communityId 
-        ? { ...community, joined: !community.joined }
-        : community
-    ));
-    
-    toast({
-      title: "コミュニティに参加しました",
-      description: "メンバーとして活動を開始できます",
-    });
+  const { data: communities = [], isLoading } = useQuery({
+    queryKey: ['communities'],
+    queryFn: fetchCommunities,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createCommunity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communities'] });
+      toast({
+        title: "コミュニティを作成しました",
+        description: "新しいコミュニティの管理者になりました",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "エラーが発生しました",
+        description: "もう一度お試しください",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const joinMutation = useMutation({
+    mutationFn: joinCommunity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['communities'] });
+      toast({
+        title: "コミュニティに参加しました",
+        description: "メンバーとして活動を開始できます",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "エラーが発生しました",
+        description: "もう一度お試しください",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleJoinCommunity = async (communityId: number) => {
+    await joinMutation.mutateAsync(communityId);
     navigate(`/communities/${communityId}`);
   };
 
-  const handleCreateCommunity = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateCommunity = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
@@ -56,21 +83,16 @@ const Communities = () => {
       return;
     }
 
-    const newCommunity: Community = {
-      id: communities.length + 1,
-      name,
-      description,
-      members: 1,
-      joined: true,
-    };
-
-    setCommunities([...communities, newCommunity]);
-    toast({
-      title: "コミュニティを作成しました",
-      description: "新しいコミュニティの管理者になりました",
-    });
-    navigate(`/communities/${newCommunity.id}`);
+    await createMutation.mutateAsync({ name, description });
   };
+
+  const filteredCommunities = communities.filter((community) =>
+    community.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
