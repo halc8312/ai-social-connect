@@ -55,7 +55,8 @@ const Login = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!e.key) return; // キーが未定義の場合は早期リターン
+    // キーイベントを処理するが、特別な処理は必要ないのでイベントを通過させる
+    return;
   };
 
   return (
