@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchCommunities, createCommunity, joinCommunity } from "@/api/communities";
 import type { Community } from "@/types";
@@ -22,7 +23,7 @@ const Communities = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: communities = [], isLoading } = useQuery({
+  const { data: communities = [], isLoading, error } = useQuery({
     queryKey: ['communities'],
     queryFn: fetchCommunities,
   });
@@ -36,13 +37,6 @@ const Communities = () => {
         description: "新しいコミュニティの管理者になりました",
       });
     },
-    onError: () => {
-      toast({
-        title: "エラーが発生しました",
-        description: "もう一度お試しください",
-        variant: "destructive",
-      });
-    },
   });
 
   const joinMutation = useMutation({
@@ -51,14 +45,6 @@ const Communities = () => {
       queryClient.invalidateQueries({ queryKey: ['communities'] });
       toast({
         title: "コミュニティに参加しました",
-        description: "メンバーとして活動を開始できます",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "エラーが発生しました",
-        description: "もう一度お試しください",
-        variant: "destructive",
       });
     },
   });
@@ -86,13 +72,17 @@ const Communities = () => {
     await createMutation.mutateAsync({ name, description });
   };
 
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-destructive">エラーが発生しました。もう一度お試しください。</p>
+      </div>
+    );
+  }
+
   const filteredCommunities = communities.filter((community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -123,7 +113,12 @@ const Communities = () => {
                   />
                 </div>
                 <div className="flex justify-end">
-                  <Button type="submit">作成する</Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createMutation.isPending}
+                  >
+                    {createMutation.isPending ? "作成中..." : "作成する"}
+                  </Button>
                 </div>
               </form>
             </DialogContent>
@@ -141,11 +136,26 @@ const Communities = () => {
       </div>
 
       <div className="grid gap-6">
-        {communities
-          .filter((community) =>
-            community.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((community) => (
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="w-full">
+              <CardHeader>
+                <CardTitle>
+                  <Skeleton className="h-8 w-3/4" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-4" />
+                <Skeleton className="h-4 w-2/3" />
+              </CardContent>
+            </Card>
+          ))
+        ) : filteredCommunities.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            コミュニティが見つかりませんでした
+          </div>
+        ) : (
+          filteredCommunities.map((community) => (
             <Card key={community.id} className="w-full">
               <CardHeader>
                 <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -154,6 +164,7 @@ const Communities = () => {
                     onClick={() => handleJoinCommunity(community.id)}
                     variant={community.joined ? "outline" : "default"}
                     className="w-full sm:w-auto"
+                    disabled={joinMutation.isPending}
                   >
                     {community.joined ? "参加中" : "参加する"}
                   </Button>
@@ -169,7 +180,8 @@ const Communities = () => {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );
