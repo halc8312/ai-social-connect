@@ -23,13 +23,6 @@ const CommunityDetail = () => {
     queryFn: () => fetchCommunityById(id!),
     enabled: !!id,
     retry: 2,
-    onError: (error) => {
-      toast({
-        title: "エラーが発生しました",
-        description: error instanceof Error ? error.message : "コミュニティの取得に失敗しました",
-        variant: "destructive",
-      });
-    }
   });
 
   const community = response?.data;
@@ -72,6 +65,11 @@ const CommunityDetail = () => {
   }
 
   if (error) {
+    toast({
+      title: "エラーが発生しました",
+      description: error instanceof Error ? error.message : "コミュニティの取得に失敗しました",
+      variant: "destructive",
+    });
     return (
       <div className="w-full max-w-4xl mx-auto px-4 py-8">
         <Alert variant="destructive">
