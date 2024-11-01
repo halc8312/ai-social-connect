@@ -83,14 +83,14 @@ const ProjectCard = memo(({ project, isPending, onLike }: ProjectCardProps) => {
               variant="ghost"
               size="sm"
               className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
-              onClick={() => toggleComments(Number(project.id))}
+              onClick={() => toggleComments(project.id)}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
               <span>{project.comments}</span>
             </Button>
           </div>
           <AnimatePresence>
-            {activeCommentSection === Number(project.id) && (
+            {activeCommentSection === project.id && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}

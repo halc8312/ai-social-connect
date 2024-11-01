@@ -4,10 +4,10 @@ import { Project } from '@/types';
 interface ProjectState {
   projects: Project[];
   likedProjects: string[];
-  activeCommentSection: number | null;
+  activeCommentSection: string | null;
   setProjects: (projects: Project[]) => void;
   toggleLike: (projectId: string) => void;
-  toggleComments: (projectId: number | null) => void;
+  toggleComments: (projectId: string) => void;
   updateProjectLikes: (projectId: string, likes: number) => void;
 }
 
