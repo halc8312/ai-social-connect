@@ -1,8 +1,8 @@
-import { Project } from "@/types";
+import { Project, ApiResponse, ProjectsResponse } from "@/types";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
-export const fetchProjects = async (): Promise<Project[]> => {
+export const fetchProjects = async (): Promise<ApiResponse<ProjectsResponse>> => {
   const response = await fetch(`${BASE_URL}/projects`);
   if (!response.ok) {
     throw new Error('Failed to fetch projects');
@@ -10,7 +10,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
   return response.json();
 };
 
-export const fetchProjectById = async (id: string): Promise<Project> => {
+export const fetchProjectById = async (id: string): Promise<ApiResponse<Project>> => {
   const response = await fetch(`${BASE_URL}/projects/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch project');
@@ -18,7 +18,7 @@ export const fetchProjectById = async (id: string): Promise<Project> => {
   return response.json();
 };
 
-export const createProject = async (data: Omit<Project, "id" | "userId" | "likes" | "comments" | "createdAt">): Promise<Project> => {
+export const createProject = async (data: Omit<Project, "id" | "userId" | "likes" | "comments" | "createdAt">): Promise<ApiResponse<Project>> => {
   const response = await fetch(`${BASE_URL}/projects`, {
     method: 'POST',
     headers: {
@@ -32,11 +32,12 @@ export const createProject = async (data: Omit<Project, "id" | "userId" | "likes
   return response.json();
 };
 
-export const likeProject = async (projectId: string): Promise<void> => {
+export const likeProject = async (projectId: string): Promise<ApiResponse<{ likes: number }>> => {
   const response = await fetch(`${BASE_URL}/projects/${projectId}/like`, {
     method: 'POST',
   });
   if (!response.ok) {
     throw new Error('Failed to like project');
   }
+  return response.json();
 };

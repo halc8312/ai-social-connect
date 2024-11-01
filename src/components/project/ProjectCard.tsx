@@ -6,15 +6,32 @@ import CommentSection from "@/components/comment/CommentSection";
 import { Project } from "@/types";
 import { useProjectStore } from "@/stores/projectStore";
 import { memo } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectCardProps {
   project: Project;
   isPending?: boolean;
+  onLike?: (projectId: string) => void;
 }
 
-const ProjectCard = memo(({ project, isPending }: ProjectCardProps) => {
-  const { likedProjects, activeCommentSection, toggleLike, toggleComments } = useProjectStore();
+const ProjectCard = memo(({ project, isPending, onLike }: ProjectCardProps) => {
+  const { likedProjects, activeCommentSection, toggleComments } = useProjectStore();
+  const { toast } = useToast();
   const isLiked = likedProjects.includes(project.id);
+
+  const handleLike = async () => {
+    try {
+      if (onLike) {
+        await onLike(project.id);
+      }
+    } catch (error) {
+      toast({
+        title: "エラーが発生しました",
+        description: "いいねの更新に失敗しました",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -52,7 +69,7 @@ const ProjectCard = memo(({ project, isPending }: ProjectCardProps) => {
               className={`flex-1 sm:flex-none transition-all duration-200 rounded-full ${
                 isLiked ? "text-primary bg-primary/10" : "hover:bg-primary/5"
               }`}
-              onClick={() => toggleLike(project.id)}
+              onClick={handleLike}
               disabled={isPending}
             >
               <Heart

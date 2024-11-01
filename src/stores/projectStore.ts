@@ -8,6 +8,7 @@ interface ProjectState {
   setProjects: (projects: Project[]) => void;
   toggleLike: (projectId: string) => void;
   toggleComments: (projectId: number | null) => void;
+  updateProjectLikes: (projectId: string, likes: number) => void;
 }
 
 export const useProjectStore = create<ProjectState>((set) => ({
@@ -24,5 +25,11 @@ export const useProjectStore = create<ProjectState>((set) => ({
   toggleComments: (projectId) =>
     set((state) => ({
       activeCommentSection: state.activeCommentSection === projectId ? null : projectId
+    })),
+  updateProjectLikes: (projectId, likes) =>
+    set((state) => ({
+      projects: state.projects.map(project =>
+        project.id === projectId ? { ...project, likes } : project
+      )
     })),
 }));
