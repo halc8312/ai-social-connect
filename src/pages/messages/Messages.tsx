@@ -1,9 +1,27 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, Menu } from "lucide-react";
+import { Search, Send } from "lucide-react";
+import { MessagesLoadingState } from "@/components/loading/MessagesLoadingState";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const Messages = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const { data: messages, isLoading } = useQuery({
+    queryKey: ['messages'],
+    queryFn: async () => {
+      // TODO: 実際のAPI呼び出しに置き換える
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return [];
+    },
+  });
+
+  if (isLoading) {
+    return <MessagesLoadingState />;
+  }
+
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-2rem)] gap-4">
       {/* サイドバー：チャットリスト */}

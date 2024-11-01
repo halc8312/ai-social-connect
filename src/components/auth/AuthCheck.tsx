@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthState } from '@/hooks/useAuthState';
+import { PageLoadingState } from '@/components/loading/PageLoadingState';
 
 interface AuthCheckProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ export const AuthCheck = ({ children }: AuthCheckProps) => {
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <PageLoadingState />;
   }
 
   if (!isAuthenticated) {
