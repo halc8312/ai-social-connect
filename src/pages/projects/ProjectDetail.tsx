@@ -16,11 +16,13 @@ const ProjectDetail = () => {
   const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  const { data: project, isLoading, error } = useQuery({
+  const { data: response, isLoading, error } = useQuery({
     queryKey: ['project', id],
     queryFn: () => fetchProjectById(id!),
     enabled: !!id,
   });
+
+  const project = response?.data;
 
   if (isLoading) {
     return (
