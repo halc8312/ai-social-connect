@@ -17,11 +17,13 @@ const CommunityDetail = () => {
   const [showComments, setShowComments] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: community, isLoading, error } = useQuery({
+  const { data: response, isLoading, error } = useQuery({
     queryKey: ['community', id],
     queryFn: () => fetchCommunityById(id!),
     enabled: !!id,
   });
+
+  const community = response?.data;
 
   const joinMutation = useMutation({
     mutationFn: joinCommunity,
@@ -61,27 +63,18 @@ const CommunityDetail = () => {
         className="space-y-6"
       >
         <Card className="bg-white/50 backdrop-blur-sm border-gray-200">
-          {isLoading ? (
+          {isLoading || !community ? (
             <CardContent className="p-6">
               <Skeleton className="h-8 w-3/4 mb-4" />
               <Skeleton className="h-4 w-1/4 mb-6" />
               <Skeleton className="h-4 w-full mb-2" />
               <Skeleton className="h-4 w-5/6" />
             </CardContent>
-          ) : community ? (
+          ) : (
             <>
               <CardHeader>
-                <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    {community.name}
-                  </span>
-                  <Button 
-                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-                    onClick={() => joinMutation.mutateAsync(community.id)}
-                    disabled={community.joined || joinMutation.isPending}
-                  >
-                    {community.joined ? "参加中" : "コミュニティに参加"}
-                  </Button>
+                <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {community.name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -95,6 +88,13 @@ const CommunityDetail = () => {
                 
                 <div className="space-y-6">
                   <div className="flex gap-2">
+                    <Button
+                      className="flex-1 sm:flex-none"
+                      onClick={() => joinMutation.mutateAsync(Number(community.id))}
+                      disabled={community.joined || joinMutation.isPending}
+                    >
+                      {community.joined ? "参加中" : "コミュニティに参加"}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -122,13 +122,13 @@ const CommunityDetail = () => {
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <CommentSection />
+                      <CommentSection projectId={community.id} />
                     </motion.div>
                   )}
                 </div>
               </CardContent>
             </>
-          ) : null}
+          )}
         </Card>
       </motion.div>
     </div>
