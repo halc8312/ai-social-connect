@@ -63,12 +63,12 @@ const Projects = () => {
         <motion.h1
           initial={{ x: -20 }}
           animate={{ x: 0 }}
-          className="text-2xl sm:text-3xl font-bold"
+          className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
         >
           AIプロジェクト
         </motion.h1>
         <Button
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
           onClick={() => setShowCreate(!showCreate)}
         >
           {showCreate ? "一覧に戻る" : "プロジェクトを投稿"}
@@ -96,10 +96,10 @@ const Projects = () => {
           >
             <div className="mb-8">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
                   placeholder="プロジェクトを検索..."
-                  className="pl-10"
+                  className="pl-10 bg-white/50 backdrop-blur-sm border-gray-200 focus:border-primary/50 transition-colors rounded-full"
                 />
               </div>
             </div>
@@ -112,9 +112,11 @@ const Projects = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
-                  <Card className="w-full transform transition-all duration-200 hover:shadow-lg">
+                  <Card className="w-full transform transition-all duration-200 hover:shadow-lg hover:-translate-y-1 bg-white/50 backdrop-blur-sm border-gray-200">
                     <CardHeader>
-                      <CardTitle className="text-xl sm:text-2xl">{project.title}</CardTitle>
+                      <CardTitle className="text-xl sm:text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        {project.title}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-gray-600 mb-4 text-sm sm:text-base">
@@ -126,7 +128,7 @@ const Projects = () => {
                             key={i}
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
-                            className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm whitespace-nowrap"
+                            className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm whitespace-nowrap backdrop-blur-sm"
                           >
                             {tool}
                           </motion.span>
@@ -136,14 +138,18 @@ const Projects = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={`flex-1 sm:flex-none transition-colors duration-200 ${
-                            likedProjects.includes(index) ? "text-primary" : ""
+                          className={`flex-1 sm:flex-none transition-all duration-200 rounded-full ${
+                            likedProjects.includes(index) 
+                              ? "text-primary bg-primary/10" 
+                              : "hover:bg-primary/5"
                           }`}
                           onClick={() => handleLike(index)}
                         >
                           <Heart
-                            className={`w-4 h-4 mr-2 ${
-                              likedProjects.includes(index) ? "fill-current" : ""
+                            className={`w-4 h-4 mr-2 transition-transform duration-200 ${
+                              likedProjects.includes(index) 
+                                ? "fill-current scale-110" 
+                                : "scale-100"
                             }`}
                           />
                           <span>{project.likes}</span>
@@ -151,7 +157,7 @@ const Projects = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="flex-1 sm:flex-none"
+                          className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
                           onClick={() => toggleComments(index)}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
@@ -165,6 +171,7 @@ const Projects = () => {
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2 }}
+                            className="mt-4"
                           >
                             <CommentSection projectId={index.toString()} />
                           </motion.div>
