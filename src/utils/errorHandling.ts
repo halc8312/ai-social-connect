@@ -11,7 +11,7 @@ export class APIError extends Error {
   }
 }
 
-export const handleApiError = (error: unknown, defaultMessage: string): never => {
+export const handleApiError = (error: unknown, defaultMessage: string) => {
   const errorMessage = error instanceof Error ? error.message : defaultMessage;
   toast.error(errorMessage);
   throw new APIError(errorMessage);
