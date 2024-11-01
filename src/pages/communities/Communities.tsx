@@ -25,29 +25,7 @@ const Communities = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [communities, setCommunities] = useState<Community[]>([
-    {
-      id: 1,
-      name: "ChatGPT Users",
-      members: 1234,
-      description: "ChatGPTを使用した開発やプロジェクトについて議論するコミュニティ",
-      joined: false,
-    },
-    {
-      id: 2,
-      name: "Stable Diffusion",
-      members: 856,
-      description: "画像生成AIの活用方法や最新情報を共有するグループ",
-      joined: true,
-    },
-    {
-      id: 3,
-      name: "AI開発者コミュニティ",
-      members: 567,
-      description: "AIモデルの開発や実装について情報交換する場",
-      joined: false,
-    },
-  ]);
+  const [communities, setCommunities] = useState<Community[]>([]);
 
   const handleJoinCommunity = (communityId: number) => {
     setCommunities(communities.map(community => 

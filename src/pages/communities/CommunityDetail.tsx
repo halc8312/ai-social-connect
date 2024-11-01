@@ -13,15 +13,6 @@ const CommunityDetail = () => {
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
 
-  // この部分でコミュニティの情報を取得する必要があります
-  const communityData = {
-    name: "コミュニティが見つかりません",
-    members: 0,
-    description: "指定されたコミュニティは存在しないか、アクセスできません。",
-    topics: [],
-    recentActivities: []
-  };
-
   const handleShare = () => {
     toast({
       title: "共有リンクをコピーしました",
@@ -44,7 +35,7 @@ const CommunityDetail = () => {
           <CardHeader>
             <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                {communityData.name}
+                コミュニティ名
               </span>
               <Button className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity">
                 コミュニティに参加
@@ -54,43 +45,13 @@ const CommunityDetail = () => {
           <CardContent>
             <div className="flex items-center gap-2 text-gray-600 mb-4">
               <Users className="w-5 h-5" />
-              <span>{communityData.members}メンバー</span>
+              <span>0メンバー</span>
             </div>
-            <p className="text-gray-600 mb-6">{communityData.description}</p>
+            <p className="text-gray-600 mb-6">
+              コミュニティの説明がここに表示されます。
+            </p>
             
             <div className="space-y-6">
-              {communityData.topics.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">トピック</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {communityData.topics.map((topic, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {communityData.recentActivities.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">最近の活動</h3>
-                  <div className="space-y-2">
-                    {communityData.recentActivities.map((activity, index) => (
-                      <div
-                        key={index}
-                        className="p-3 bg-white/30 backdrop-blur-sm rounded-lg text-gray-600"
-                      >
-                        {activity}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
