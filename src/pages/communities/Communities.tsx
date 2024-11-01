@@ -52,13 +52,6 @@ const Communities = () => {
     queryKey: ['communities'],
     queryFn: () => Promise.resolve(mockCommunities),
     retry: 3,
-    onError: (error) => {
-      toast({
-        title: "エラーが発生しました",
-        description: "コミュニティの取得に失敗しました。時間をおいて再度お試しください。",
-        variant: "destructive",
-      });
-    },
   });
 
   const joinMutation = useMutation({
@@ -72,7 +65,7 @@ const Communities = () => {
         title: "コミュニティに参加しました",
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "エラーが発生しました",
         description: "コミュニティへの参加に失敗しました。もう一度お試しください。",
