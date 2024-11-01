@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthState } from "@/hooks/useAuthState";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
@@ -58,36 +59,48 @@ const Login = () => {
       <Card className="w-full max-w-md">
         <CardHeader>
           <h1 className="text-2xl font-bold text-center">おかえりなさい</h1>
-          <p className="text-muted-foreground text-center">
+          <p className="text-muted-foreground text-center" id="login-description">
             アカウントにログインしてください
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+          <form onSubmit={handleSubmit} className="space-y-4" aria-describedby="login-description">
+            <div className="space-y-2">
+              <Label htmlFor="email">メールアドレス</Label>
               <Input
+                id="email"
                 type="email"
                 placeholder="メールアドレス"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-primary"
                 disabled={isLoading}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
               />
               {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
+                <p className="text-sm text-destructive mt-1" id="email-error" role="alert">
+                  {errors.email}
+                </p>
               )}
             </div>
-            <div>
+            <div className="space-y-2">
+              <Label htmlFor="password">パスワード</Label>
               <Input
+                id="password"
                 type="password"
                 placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-primary"
                 disabled={isLoading}
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? "password-error" : undefined}
               />
               {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password}</p>
+                <p className="text-sm text-destructive mt-1" id="password-error" role="alert">
+                  {errors.password}
+                </p>
               )}
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
