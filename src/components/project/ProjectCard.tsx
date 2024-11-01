@@ -21,6 +21,7 @@ const ProjectCard = memo(({ project, isPending }: ProjectCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      layout
     >
       <Card className="w-full transform transition-all duration-200 hover:shadow-lg hover:-translate-y-1 bg-white/50 backdrop-blur-sm border-gray-200">
         <CardHeader>
