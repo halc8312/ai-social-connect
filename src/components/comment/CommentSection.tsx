@@ -11,7 +11,6 @@ interface CommentSectionProps {
 }
 
 const CommentSection = ({ postId, projectId }: CommentSectionProps) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -39,8 +38,6 @@ const CommentSection = ({ postId, projectId }: CommentSectionProps) => {
       setIsSubmitting(false);
     }
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="space-y-4 mt-4">
