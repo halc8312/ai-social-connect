@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import CommentSection from "@/components/comment/CommentSection";
 import { Project } from "@/types";
 import { useProjectStore } from "@/stores/projectStore";
+import { memo } from "react";
 
 interface ProjectCardProps {
   project: Project;
   isPending?: boolean;
 }
 
-const ProjectCard = ({ project, isPending }: ProjectCardProps) => {
+const ProjectCard = memo(({ project, isPending }: ProjectCardProps) => {
   const { likedProjects, activeCommentSection, toggleLike, toggleComments } = useProjectStore();
   const isLiked = likedProjects.includes(project.id);
 
@@ -87,6 +88,8 @@ const ProjectCard = ({ project, isPending }: ProjectCardProps) => {
       </Card>
     </motion.div>
   );
-};
+});
+
+ProjectCard.displayName = 'ProjectCard';
 
 export default ProjectCard;

@@ -2,6 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProjectCard from "./ProjectCard";
 import { Project } from "@/types";
+import { memo } from "react";
 
 interface ProjectListProps {
   projects: Project[];
@@ -9,7 +10,7 @@ interface ProjectListProps {
   isPending?: boolean;
 }
 
-const ProjectList = ({
+const ProjectList = memo(({
   projects,
   isLoading,
   isPending
@@ -53,6 +54,8 @@ const ProjectList = ({
       ))}
     </>
   );
-};
+});
+
+ProjectList.displayName = 'ProjectList';
 
 export default ProjectList;

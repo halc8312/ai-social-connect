@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import CreateProject from "@/components/project/CreateProject";
@@ -19,10 +19,16 @@ const Projects = () => {
   const { data: projects = [], isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
-    onSuccess: (data) => {
-      setProjects(data);
-    },
+    staleTime: 1000 * 60 * 5, // 5分間キャッシュを保持
+    cacheTime: 1000 * 60 * 30, // 30分間キャッシュを維持
   });
+
+  // プロジェクトデータが更新されたら状態を更新
+  useMemo(() => {
+    if (projects.length > 0) {
+      setProjects(projects);
+    }
+  }, [projects, setProjects]);
 
   const likeMutation = useMutation({
     mutationFn: likeProject,
@@ -34,13 +40,16 @@ const Projects = () => {
     },
   });
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-  };
+  }, []);
 
-  const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProjects = useMemo(() => 
+    projects.filter(project =>
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+    [projects, searchQuery]
   );
 
   if (error) {
