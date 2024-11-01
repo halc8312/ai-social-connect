@@ -1,25 +1,65 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAuthState } from "@/hooks/useAuthState";
+import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<Partial<LoginInput>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const { setUser } = useAuthState();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Auth logic will be implemented later
+    setErrors({});
+    setIsLoading(true);
+
+    try {
+      const result = loginSchema.parse({ email, password });
+      
+      // TODO: ここでバックエンドAPIと連携する
+      // 仮の実装として、ダミーユーザーでログインする
+      const dummyUser = {
+        id: "1",
+        email: result.email,
+        name: "テストユーザー",
+      };
+
+      setUser(dummyUser);
+      toast({
+        title: "ログインしました",
+      });
+
+      const from = location.state?.from?.pathname || "/feed";
+      navigate(from);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "エラーが発生しました",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary/5 to-secondary/5 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <h1 className="text-2xl font-bold text-center">Welcome back</h1>
+          <h1 className="text-2xl font-bold text-center">おかえりなさい</h1>
           <p className="text-muted-foreground text-center">
-            Log in to your account
+            アカウントにログインしてください
           </p>
         </CardHeader>
         <CardContent>
@@ -27,31 +67,39 @@ const Login = () => {
             <div>
               <Input
                 type="email"
-                placeholder="Email"
+                placeholder="メールアドレス"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-primary"
+                disabled={isLoading}
               />
+              {errors.email && (
+                <p className="text-sm text-destructive mt-1">{errors.email}</p>
+              )}
             </div>
             <div>
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-primary"
+                disabled={isLoading}
               />
+              {errors.password && (
+                <p className="text-sm text-destructive mt-1">{errors.password}</p>
+              )}
             </div>
-            <Button type="submit" className="w-full">
-              Log in
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "ログイン中..." : "ログイン"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="justify-center">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            アカウントをお持ちでない方は{" "}
             <Link to="/signup" className="text-primary hover:underline">
-              Sign up
+              新規登録
             </Link>
           </p>
         </CardFooter>
