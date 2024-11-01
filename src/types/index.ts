@@ -34,20 +34,6 @@ export interface Community {
   description: string;
   members: number;
   joined: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  ownerId: string;
-  tags?: string[];
-  imageUrl?: string;
-  memberCount: {
-    total: number;
-    active: number;
-  };
-  settings?: {
-    isPrivate: boolean;
-    requiresApproval: boolean;
-    allowExternalLinks: boolean;
-  };
 }
 
 export interface Project {
