@@ -5,36 +5,59 @@ import { useToast } from "@/hooks/use-toast";
 import CommentSection from "@/components/comment/CommentSection";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProjectById } from "@/api/projects";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const ProjectDetail = () => {
+  const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    toast({
-      title: isLiked ? "いいねを取り消しました" : "「いいね」しました",
-    });
-  };
+  const { data: project, isLoading, error } = useQuery({
+    queryKey: ['project', id],
+    queryFn: () => fetchProjectById(id!),
+    enabled: !!id,
+  });
 
-  const handleShare = () => {
-    toast({
-      title: "共有リンクをコピーしました",
-    });
-  };
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-4xl mx-auto px-4 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
+        <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+        <div className="h-4 bg-gray-200 rounded w-1/3" />
+      </div>
+    );
+  }
 
-  const projectData = {
-    title: "AI画像生成アプリ",
-    creator: "山田太郎",
-    date: "2024年3月15日",
-    description: "Stable Diffusionを使用して、テキストから画像を生成するWebアプリケーションです。直感的なUIで、誰でも簡単にAIアートを作成できます。",
-    longDescription: "このプロジェクトは、最新のAI技術を活用して、ユーザーが簡単に創造的な画像を生成できるプラットフォームを提供することを目指しています。特徴的な機能として、プロンプトの補助機能、画像の履歴管理、コミュニティでの共有機能などがあります。",
-    tools: ["Stable Diffusion", "React", "Python", "FastAPI"],
-    projectUrl: "https://example.com/project",
-    likes: 234,
-    comments: 45
-  };
+  if (error) {
+    return (
+      <div className="w-full max-w-4xl mx-auto px-4">
+        <Alert variant="destructive">
+          <AlertTitle>エラーが発生しました</AlertTitle>
+          <AlertDescription>
+            プロジェクトの読み込み中にエラーが発生しました。
+            ページを更新するか、しばらく時間をおいて再度お試しください。
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="w-full max-w-4xl mx-auto px-4">
+        <Alert>
+          <AlertTitle>プロジェクトが見つかりません</AlertTitle>
+          <AlertDescription>
+            指定されたプロジェクトは存在しないか、削除された可能性があります。
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,22 +69,22 @@ const ProjectDetail = () => {
         <Card className="bg-white/50 backdrop-blur-sm border-gray-200">
           <CardHeader>
             <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {projectData.title}
+              {project.title}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4 items-center text-gray-600 mb-6">
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                <span>{projectData.creator}</span>
+                <span>{project.creator}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                <span>{projectData.date}</span>
+                <span>{project.date}</span>
               </div>
-              {projectData.projectUrl && (
+              {project.projectUrl && (
                 <a
-                  href={projectData.projectUrl}
+                  href={project.projectUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-primary hover:underline"
@@ -74,14 +97,14 @@ const ProjectDetail = () => {
 
             <div className="space-y-6">
               <div>
-                <p className="text-gray-600 mb-4">{projectData.description}</p>
-                <p className="text-gray-600">{projectData.longDescription}</p>
+                <p className="text-gray-600 mb-4">{project.description}</p>
+                <p className="text-gray-600">{project.longDescription}</p>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold mb-3">使用技術</h3>
                 <div className="flex flex-wrap gap-2">
-                  {projectData.tools.map((tool, index) => (
+                  {project.tools.map((tool, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm backdrop-blur-sm"
@@ -99,14 +122,19 @@ const ProjectDetail = () => {
                   className={`flex-1 sm:flex-none transition-all duration-200 rounded-full ${
                     isLiked ? "text-primary bg-primary/10" : "hover:bg-primary/5"
                   }`}
-                  onClick={handleLike}
+                  onClick={() => {
+                    setIsLiked(!isLiked);
+                    toast({
+                      title: isLiked ? "いいねを取り消しました" : "「いいね」しました",
+                    });
+                  }}
                 >
                   <Heart
                     className={`w-4 h-4 mr-2 transition-transform duration-200 ${
                       isLiked ? "fill-current scale-110" : "scale-100"
                     }`}
                   />
-                  <span>{projectData.likes}</span>
+                  <span>{project.likes}</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -115,13 +143,17 @@ const ProjectDetail = () => {
                   onClick={() => setShowComments(!showComments)}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
-                  <span>{projectData.comments}</span>
+                  <span>{project.comments}</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="flex-1 sm:flex-none rounded-full hover:bg-primary/5"
-                  onClick={handleShare}
+                  onClick={() => {
+                    toast({
+                      title: "共有リンクをコピーしました",
+                    });
+                  }}
                 >
                   <Share2 className="w-4 h-4 mr-2" />
                   <span>共有</span>
@@ -135,7 +167,7 @@ const ProjectDetail = () => {
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <CommentSection projectId="1" />
+                  <CommentSection projectId={project.id} />
                 </motion.div>
               )}
             </div>
