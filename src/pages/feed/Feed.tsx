@@ -1,40 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { User } from "@/types";
-import { MessageCircle, Heart, Share2, Menu } from "lucide-react";
-
-const currentUser: User = {
-  id: "1",
-  name: "John Doe",
-  email: "john@example.com",
-  createdAt: new Date(),
-};
+import { MessageCircle, Heart, Share2 } from "lucide-react";
+import CreatePost from "@/components/post/CreatePost";
+import { useToast } from "@/hooks/use-toast";
 
 const Feed = () => {
-  return (
-    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-      {/* 投稿作成カード */}
-      <Card className="w-full">
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="hidden sm:flex w-10 h-10 rounded-full bg-primary/10 items-center justify-center shrink-0">
-              {currentUser.name.charAt(0)}
-            </div>
-            <div className="flex-1">
-              <Input
-                placeholder="AIツールについて共有しよう..."
-                className="mb-4"
-              />
-              <div className="flex justify-end">
-                <Button className="w-full sm:w-auto">投稿する</Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+  const { toast } = useToast();
 
-      {/* 投稿フィード */}
+  const handleLike = () => {
+    toast({
+      title: "「いいね」しました",
+    });
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "共有リンクをコピーしました",
+    });
+  };
+
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-6">
+      <CreatePost />
+
       <div className="space-y-4">
         {[1, 2, 3].map((post) => (
           <Card key={post} className="w-full">
@@ -49,7 +37,7 @@ const Feed = () => {
                       U
                     </div>
                     <div>
-                      <div className="font-semibold">User Name</div>
+                      <div className="font-semibold">ユーザー名</div>
                       <div className="text-sm text-gray-500">2時間前</div>
                     </div>
                   </div>
@@ -58,17 +46,17 @@ const Feed = () => {
                     #AI #ChatGPT #開発
                   </p>
                   <div className="flex flex-wrap gap-2 sm:gap-4">
-                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
+                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none" onClick={handleLike}>
                       <Heart className="w-4 h-4 mr-2" />
-                      <span className="sm:inline">123</span>
+                      <span>123</span>
                     </Button>
                     <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
                       <MessageCircle className="w-4 h-4 mr-2" />
-                      <span className="sm:inline">45</span>
+                      <span>45</span>
                     </Button>
-                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none">
+                    <Button variant="ghost" size="sm" className="flex-1 sm:flex-none" onClick={handleShare}>
                       <Share2 className="w-4 h-4 mr-2" />
-                      <span className="sm:inline">共有</span>
+                      <span>共有</span>
                     </Button>
                   </div>
                 </div>
